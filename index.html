@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diário do Professor de Matemática</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Roboto+Slab:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-math: #1e3799;
+            --secondary-math: #2c3e50;
+            --accent-math: #f39c12;
+            --bg-paper: #fdfdfd;
+            --grid-line: #e2e8f0;
+            --text-main: #1a202c;
+            --council-bg: #f0fff4;
+            --council-border: #38a169;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-paper);
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        header {
+            background: var(--secondary-math);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            border-bottom: 8px solid var(--primary-math);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        header h1 { 
+            margin: 0; 
+            font-family: 'Roboto Slab', serif; 
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .panel {
+            background: white;
+            padding: 20px;
+            border: 2px solid var(--secondary-math);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 5px 5px 0px var(--grid-line);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 5px; }
+        .field label { font-weight: 700; font-size: 0.8rem; color: var(--primary-math); text-transform: uppercase; }
+        
+        select, input, textarea {
+            padding: 10px;
+            border: 2px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        /* Área de Lembretes */
+        .reminders-area {
+            background: #fff9c4;
+            border: 2px dashed #f39c12;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .reminders-area h3 {
+            margin-top: 0;
+            font-family: 'Roboto Slab', serif;
+            color: #d35400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .reminders-area textarea {
+            background: transparent;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        /* Área do Conselho de Classe */
+        .council-area {
+            background: var(--council-bg);
+            border: 2px solid var(--council-border);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .council-area h3 {
+            margin-top: 0;
+            font-family: 'Roboto Slab', serif;
+            color: var(--council-border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .council-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-family: 'Fira Code', monospace;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-apply { background: var(--primary-math); color: white; }
+        .btn-apply:hover { background: #0c2461; transform: translateY(-2px); }
+
+        /* Calendário */
+        .calendar-section { margin-bottom: 40px; }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .month-box { background: white; border: 1px solid #cbd5e0; padding: 15px; border-radius: 4px; }
+        .month-name {
+            font-family: 'Roboto Slab', serif;
+            color: var(--primary-math);
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--accent-math);
+            padding-bottom: 5px;
+        }
+
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+        .day-head { font-size: 0.7rem; font-weight: 800; color: #a0aec0; padding-bottom: 5px; }
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .day:hover { background: var(--accent-math); color: white; }
+        .day.filled { background: #ebf8ff; border: 1px solid var(--primary-math); color: var(--primary-math); font-weight: 800; }
+        .day.holiday { background: #fff5f5; color: #c53030; border: 1px dashed #feb2b2; }
+
+        /* Agenda */
+        .agenda-container { background: white; padding: 30px; border: 2px solid var(--secondary-math); border-radius: 8px; }
+        .agenda-day-item { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid var(--grid-line); }
+        .agenda-day-header {
+            font-family: 'Roboto Slab', serif;
+            font-size: 1.3rem;
+            color: var(--primary-math);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .agenda-field { margin-bottom: 8px; font-size: 1rem; line-height: 1.5; }
+        .agenda-field b { color: var(--secondary-math); display: inline-block; min-width: 150px; }
+        .empty-field { color: #cbd5e0 !important; font-style: italic; }
+
+        /* Horários */
+        .schedule-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .schedule-table th, .schedule-table td { border: 1px solid #cbd5e0; padding: 8px; text-align: center; }
+        .schedule-table th { background: #f7fafc; color: var(--primary-math); }
+        .schedule-table input { 
+            border: none; 
+            background: transparent; 
+            text-align: center; 
+            padding: 5px; 
+            font-size: 0.85rem;
+            width: 100%;
+        }
+        .schedule-table input:focus { background: #edf2f7; outline: none; }
+        .current-class-cell { background: #fff9c4 !important; font-weight: 800; }
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 650px;
+            max-height: 90vh; overflow-y: auto; border-top: 10px solid var(--primary-math);
+        }
+
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .gap-2 { gap: 8px; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .w-full { width: 100%; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; background-image: none; }
+            .container { padding: 0; max-width: 100%; }
+            .agenda-container { border: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="no-print">
+        <h1><i class="fas fa-square-root-alt"></i> Diário de Matemática - Prof. Daniel</h1>
+        <p style="font-family: 'Fira Code', monospace; margin: 5px 0 0 0;">Gestão de Registros de Aula e Planeamento</p>
+    </header>
+
+    <!-- Filtros -->
+    <section class="panel no-print">
+        <div class="filters-grid">
+            <div class="field">
+                <label>Ano Letivo</label>
+                <select id="selYear" onchange="initApp()">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Ano/Série</label>
+                <select id="selGrade" onchange="initApp()">
+                    <option value="6º Ano">6º Ano</option>
+                    <option value="7º Ano">7º Ano</option>
+                    <option value="8º Ano">8º Ano</option>
+                    <option value="9º Ano">9º Ano</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Turma</label>
+                <select id="selSub" onchange="initApp()">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Turno Ativo</label>
+                <select id="selShift" onchange="renderSchedule()">
+                    <option value="Matutino">Matutino</option>
+                    <option value="Vespertino">Vespertino</option>
+                </select>
+            </div>
+            <button class="btn btn-apply" onclick="initApp()">
+                <i class="fas fa-sync-alt"></i> Atualizar
+            </button>
+        </div>
+    </section>
+
+    <!-- Calendário -->
+    <section class="calendar-section no-print">
+        <h2 style="font-family: 'Roboto Slab';"><i class="fas fa-calendar-alt"></i> Calendário Anual</h2>
+        <div id="calendarGrid" class="calendar-grid"></div>
+    </section>
+
+    <!-- Lembretes Importantes -->
+    <section class="reminders-area no-print">
+        <h3><i class="fas fa-sticky-note"></i> Lembretes e Notas Rápidas</h3>
+        <textarea id="txtReminders" placeholder="Escreva aqui recados importantes, datas de reuniões, pendências..." oninput="saveReminders()"></textarea>
+    </section>
+
+    <!-- Conselho de Classe -->
+    <section class="council-area no-print">
+        <h3 id="councilTitle"><i class="fas fa-users"></i> Informações do Conselho de Classe</h3>
+        <div class="council-grid">
+            <div class="field">
+                <label>Dificuldades da Turma</label>
+                <textarea id="conIssues" rows="3" placeholder="Ex: Baixa adesão às tarefas, dificuldades em álgebra..." oninput="saveCouncil()"></textarea>
+            </div>
+            <div class="field">
+                <label>Destaques Positivos / Avanços</label>
+                <textarea id="conPositives" rows="3" placeholder="Ex: Melhoria no raciocínio lógico, participação ativa..." oninput="saveCouncil()"></textarea>
+            </div>
+            <div class="field">
+                <label>Alunos que necessitam Atenção (PDI/Reforço)</label>
+                <textarea id="conStudents" rows="3" placeholder="Lista de alunos e necessidades específicas..." oninput="saveCouncil()"></textarea>
+            </div>
+            <div class="field">
+                <label>Estratégias / Encaminhamentos</label>
+                <textarea id="conStrategies" rows="3" placeholder="Ações planejadas após o conselho..." oninput="saveCouncil()"></textarea>
+            </div>
+        </div>
+    </section>
+
+    <!-- Horários Editáveis -->
+    <section class="panel no-print">
+        <div class="flex justify-between items-center mb-4">
+            <h2 style="font-family: 'Roboto Slab'; margin: 0;"><i class="fas fa-clock"></i> Quadro de Horários Editável</h2>
+            <span class="text-xs text-gray-500 italic">* Alterações salvas automaticamente.</span>
+        </div>
+        <div id="scheduleContainer"></div>
+    </section>
+
+    <!-- Agenda -->
+    <section class="agenda-container">
+        <div class="no-print flex justify-between items-center mb-6 flex-wrap gap-4">
+            <h2 style="font-family: 'Roboto Slab'; margin: 0;">📖 Agenda do Período</h2>
+            <div class="flex items-center gap-2">
+                <input type="date" id="dateStart" value="2026-04-27" style="width: 150px;">
+                <span>até</span>
+                <input type="date" id="dateEnd" value="2026-05-07" style="width: 150px;">
+                <button class="btn btn-apply" onclick="renderAgenda()">Gerar</button>
+            </div>
+        </div>
+
+        <div class="no-print flex gap-2 mb-8">
+            <button class="btn btn-apply" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+            <button class="btn" style="background:#edf2f7;" onclick="exportData()"><i class="fas fa-download"></i> Backup</button>
+            <button class="btn" style="background:#edf2f7;" onclick="document.getElementById('impFile').click()"><i class="fas fa-upload"></i> Restaurar</button>
+            <input type="file" id="impFile" style="display:none" onchange="importData(event)">
+        </div>
+
+        <div id="agendaMeta" class="mb-6 font-bold text-lg border-b-2 border-primary-math pb-2"></div>
+        <div id="agendaContent"></div>
+    </section>
+
+    <footer class="no-print" style="margin-top: 50px; text-align: center; padding: 40px; border-top: 1px solid #cbd5e0; color: #718096;">
+        <div style="margin-bottom: 15px;">
+            <a href="https://www.aprendebrasildigital.com.br/" target="_blank" style="color: var(--primary-math); margin: 0 15px; text-decoration: none; font-weight: bold;">Aprende Brasil Digital</a>
+            <a href="https://corupa.educarweb.net.br/" target="_blank" style="color: var(--primary-math); margin: 0 15px; text-decoration: none; font-weight: bold;">Educar Web Corupá</a>
+        </div>
+        <p>&copy; 2026 Diário de Matemática | Prof. Daniel</p>
+    </footer>
+</div>
+
+<!-- Modal Registro -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalDateTitle" style="font-family: 'Roboto Slab'; margin-top: 0;">Data</h2>
+        <div class="field mb-4">
+            <label class="flex items-center gap-2 cursor-pointer" style="background: #fff5f5; padding: 10px; border-radius: 4px;">
+                <input type="checkbox" id="mHoliday" onchange="toggleHoliday()"> 🚩 Feriado ou Recesso Escolar
+            </label>
+        </div>
+        <div id="mFields">
+            <div class="field mb-3">
+                <label>Conteúdo / Objeto de Conhecimento</label>
+                <input type="text" id="mContent">
+            </div>
+            <div class="field mb-3">
+                <label>Objetivos da Aula</label>
+                <textarea id="mGoals" rows="2"></textarea>
+            </div>
+            <div class="field mb-3">
+                <label>O que foi feito em sala de aula</label>
+                <textarea id="mActivities" rows="3"></textarea>
+            </div>
+            <div class="field mb-3">
+                <label>Observações / Adaptações</label>
+                <textarea id="mNotes" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-6">
+            <button class="btn btn-apply w-full" onclick="saveDay()">Salvar</button>
+            <button class="btn w-full" style="background:#edf2f7" onclick="closeModal()">Sair</button>
+        </div>
+        <input type="hidden" id="mDateRef">
+    </div>
+</div>
+
+<script>
+    const APP_KEY = "DIARIO_MATH_DANIEL_V6";
+    const SCHED_KEY = "HORARIOS_MATH_DANIEL_V6";
+    const NOTES_KEY = "LEMBRETES_MATH_DANIEL_V6";
+    const COUNCIL_KEY = "CONSELHO_MATH_DANIEL_V6";
+
+    let store = JSON.parse(localStorage.getItem(APP_KEY)) || {};
+    let schedules = JSON.parse(localStorage.getItem(SCHED_KEY)) || {
+        Matutino: [
+            {time: "07:30-08:15", days: ["6º Ano", "8º Ano", "7º Ano", "9º Ano", "-"]},
+            {time: "08:15-09:00", days: ["6º Ano", "9º Ano", "7º Ano", "8º Ano", "9º Ano"]},
+            {time: "09:00-09:45", days: ["7º Ano", "9º Ano", "7º Ano", "-", "-"]},
+            {time: "09:45-10:30", days: ["8º Ano", "8º Ano", "9º Ano", "6º Ano", "-"]},
+            {time: "10:30-11:15", days: ["-", "-", "-", "8º Ano", "-"]}
+        ],
+        Vespertino: [
+            {time: "13:00-13:45", days: ["6º Ano", "9º Ano", "6º Ano", "6º Ano", "9º Ano"]},
+            {time: "13:45-14:30", days: ["6º Ano", "9º Ano", "-", "7º Ano", "-"]},
+            {time: "14:30-15:15", days: ["8º Ano", "8º Ano", "7º Ano", "7º Ano", "-"]},
+            {time: "15:30-16:15", days: ["8º Ano", "8º Ano", "-", "9º Ano", "-"]},
+            {time: "16:15-17:00", days: ["-", "-", "-", "7º Ano", "-"]}
+        ]
+    };
+    let councilData = JSON.parse(localStorage.getItem(COUNCIL_KEY)) || {};
+    
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const weekdays = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+
+    function initApp() {
+        loadReminders();
+        loadCouncil();
+        renderCalendars();
+        renderSchedule();
+        renderAgenda();
+    }
+
+    // Lembretes
+    function loadReminders() {
+        document.getElementById('txtReminders').value = localStorage.getItem(NOTES_KEY) || "";
+    }
+    function saveReminders() {
+        localStorage.setItem(NOTES_KEY, document.getElementById('txtReminders').value);
+    }
+
+    // Conselho de Classe
+    function loadCouncil() {
+        const tId = getTurmaID();
+        const data = councilData[tId] || {};
+        document.getElementById('councilTitle').innerHTML = `<i class="fas fa-users"></i> Conselho de Classe: ${tId}`;
+        document.getElementById('conIssues').value = data.issues || "";
+        document.getElementById('conPositives').value = data.positives || "";
+        document.getElementById('conStudents').value = data.students || "";
+        document.getElementById('conStrategies').value = data.strategies || "";
+    }
+    function saveCouncil() {
+        const tId = getTurmaID();
+        councilData[tId] = {
+            issues: document.getElementById('conIssues').value,
+            positives: document.getElementById('conPositives').value,
+            students: document.getElementById('conStudents').value,
+            strategies: document.getElementById('conStrategies').value
+        };
+        localStorage.setItem(COUNCIL_KEY, JSON.stringify(councilData));
+    }
+
+    function getTurmaID() {
+        return `${document.getElementById('selGrade').value} ${document.getElementById('selSub').value}`;
+    }
+
+    function renderCalendars() {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = "";
+        const year = parseInt(document.getElementById('selYear').value);
+        const tId = getTurmaID();
+
+        months.forEach((m, idx) => {
+            const box = document.createElement('div');
+            box.className = "month-box";
+            box.innerHTML = `<div class="month-name">${m}</div>`;
+            
+            const daysDiv = document.createElement('div');
+            daysDiv.className = "days-grid";
+            ["D","S","T","Q","Q","S","S"].forEach(d => daysDiv.innerHTML += `<div class="day-head">${d}</div>`);
+
+            const first = new Date(year, idx, 1).getDay();
+            const total = new Date(year, idx + 1, 0).getDate();
+
+            for(let i=0; i<first; i++) daysDiv.innerHTML += `<div></div>`;
+
+            for(let d=1; d<=total; d++) {
+                const dateKey = `${year}-${String(idx+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const data = store[tId]?.[dateKey];
+                const dayEl = document.createElement('div');
+                dayEl.className = "day";
+                if(data) {
+                    if(data.holiday) dayEl.classList.add('holiday');
+                    else dayEl.classList.add('filled');
+                }
+                dayEl.innerText = d;
+                dayEl.onclick = () => openModal(dateKey);
+                daysDiv.appendChild(dayEl);
+            }
+            box.appendChild(daysDiv);
+            grid.appendChild(box);
+        });
+    }
+
+    function renderSchedule() {
+        const shift = document.getElementById('selShift').value;
+        const grade = document.getElementById('selGrade').value;
+        const container = document.getElementById('scheduleContainer');
+        const data = schedules[shift];
+
+        let html = `<table class="schedule-table"><thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead><tbody>`;
+        
+        data.forEach((row, rowIndex) => {
+            html += `<tr>`;
+            html += `<td><input type="text" value="${row.time}" onchange="updateSchedule('${shift}', ${rowIndex}, -1, this.value)"></td>`;
+            row.days.forEach((cell, cellIndex) => {
+                const isMatch = cell === grade;
+                html += `<td class="${isMatch ? 'current-class-cell' : ''}">
+                            <input type="text" value="${cell}" onchange="updateSchedule('${shift}', ${rowIndex}, ${cellIndex}, this.value)">
+                         </td>`;
+            });
+            html += `</tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    function updateSchedule(shift, row, col, val) {
+        if (col === -1) schedules[shift][row].time = val;
+        else schedules[shift][row].days[col] = val;
+        localStorage.setItem(SCHED_KEY, JSON.stringify(schedules));
+        clearTimeout(window.schedTimeout);
+        window.schedTimeout = setTimeout(renderSchedule, 1000);
+    }
+
+    function renderAgenda() {
+        const start = document.getElementById('dateStart').value;
+        const end = document.getElementById('dateEnd').value;
+        const tId = getTurmaID();
+        const container = document.getElementById('agendaContent');
+        const meta = document.getElementById('agendaMeta');
+
+        if(!start || !end) return;
+        
+        meta.innerHTML = `Turma: ${tId} <span style="margin-left: 20px; color: #718096; font-size: 0.8rem">Período: ${formatDate(start)} a ${formatDate(end)}</span>`;
+        container.innerHTML = "";
+
+        let cur = new Date(start + "T12:00:00");
+        let limit = new Date(end + "T12:00:00");
+
+        while(cur <= limit) {
+            const key = cur.toISOString().split('T')[0];
+            const data = store[tId]?.[key];
+            const item = document.createElement('div');
+            item.className = "agenda-day-item";
+
+            let inner = `<div class="agenda-day-header">
+                            <span>Dia: ${formatDate(key)} (${weekdays[cur.getDay()]})</span>
+                            <button class="btn no-print" style="padding: 5px 10px; font-size: 0.7rem;" onclick="openModal('${key}')">EDITAR</button>
+                         </div>`;
+
+            if(data && data.holiday) {
+                inner += `<div class="agenda-field" style="color: #c53030; font-weight: 800;">🚩 FERIADO / RECESSO ESCOLAR</div>`;
+            } else {
+                inner += `
+                    <div class="agenda-field"><b>Conteúdo:</b> <span class="${!data?.content ? 'empty-field' : ''}">${data?.content || '[Em falta]'}</span></div>
+                    <div class="agenda-field"><b>Objetivos:</b> <span class="${!data?.goals ? 'empty-field' : ''}">${data?.goals || '[Em falta]'}</span></div>
+                    <div class="agenda-field"><b>O que foi feito:</b> <span class="${!data?.activities ? 'empty-field' : ''}">${data?.activities || '[Em falta]'}</span></div>
+                    <div class="agenda-field"><b>Observações:</b> <span class="${!data?.notes ? 'empty-field' : ''}">${data?.notes || '[Em falta]'}</span></div>
+                `;
+            }
+
+            item.innerHTML = inner;
+            container.appendChild(item);
+            cur.setDate(cur.getDate() + 1);
+        }
+    }
+
+    function openModal(dateKey) {
+        const tId = getTurmaID();
+        const data = store[tId]?.[dateKey] || {};
+        document.getElementById('mDateRef').value = dateKey;
+        document.getElementById('modalDateTitle').innerText = "Registo: " + formatDate(dateKey);
+        document.getElementById('mHoliday').checked = data.holiday || false;
+        document.getElementById('mContent').value = data.content || "";
+        document.getElementById('mGoals').value = data.goals || "";
+        document.getElementById('mActivities').value = data.activities || "";
+        document.getElementById('mNotes').value = data.notes || "";
+        toggleHoliday();
+        document.getElementById('editModal').style.display = "flex";
+    }
+
+    function toggleHoliday() {
+        const isH = document.getElementById('mHoliday').checked;
+        document.getElementById('mFields').style.opacity = isH ? "0.3" : "1";
+        document.getElementById('mFields').style.pointerEvents = isH ? "none" : "auto";
+    }
+
+    function saveDay() {
+        const key = document.getElementById('mDateRef').value;
+        const tId = getTurmaID();
+        if(!store[tId]) store[tId] = {};
+        store[tId][key] = {
+            holiday: document.getElementById('mHoliday').checked,
+            content: document.getElementById('mContent').value,
+            goals: document.getElementById('mGoals').value,
+            activities: document.getElementById('mActivities').value,
+            notes: document.getElementById('mNotes').value
+        };
+        localStorage.setItem(APP_KEY, JSON.stringify(store));
+        closeModal();
+        initApp();
+    }
+
+    function closeModal() { document.getElementById('editModal').style.display = "none"; }
+    function formatDate(s) { const [y, m, d] = s.split('-'); return `${d}/${m}/${y}`; }
+
+    function exportData() {
+        const combined = { 
+            logs: store, 
+            schedule: schedules, 
+            notes: localStorage.getItem(NOTES_KEY),
+            council: councilData
+        };
+        const blob = new Blob([JSON.stringify(combined)], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "backup_diario_daniel.json";
+        a.click();
+    }
+
+    function importData(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const data = JSON.parse(ev.target.result);
+            if (data.logs) store = data.logs;
+            if (data.schedule) schedules = data.schedule;
+            if (data.notes) localStorage.setItem(NOTES_KEY, data.notes);
+            if (data.council) councilData = data.council;
+            localStorage.setItem(APP_KEY, JSON.stringify(store));
+            localStorage.setItem(SCHED_KEY, JSON.stringify(schedules));
+            localStorage.setItem(COUNCIL_KEY, JSON.stringify(councilData));
+            initApp();
+            alert("Backup restaurado com sucesso!");
+        };
+        reader.readAsText(file);
+    }
+
+    window.onload = initApp;
+</script>
+</body>
+</html>
